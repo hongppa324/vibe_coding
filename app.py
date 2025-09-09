@@ -1,8 +1,13 @@
 import io
 import numpy as np
 from PIL import Image, ImageEnhance, ImageOps
+
+import os
+os.environ["STREAMLIT_SERVER_FILE_WATCHER_TYPE"] = "poll"
+
 import streamlit as st
 
+st.write("fileWatcherType:", st.get_option("server.fileWatcherType"))
 try:
     from scipy.io.wavfile import write as wav_write
     SCIPY = True
@@ -189,7 +194,7 @@ if mode.startswith("Visual"):
                 np.concatenate([np.array(img), np.array(out)], axis=1),
                 caption="좌: 원본 / 우: 적용",
                 use_column_width=True
-            )
+            ) 
 
             buf = io.BytesIO()
             out.save(buf, format="PNG")
