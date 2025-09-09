@@ -175,15 +175,26 @@ if mode.startswith("Visual"):
 
     with colR:
         if uploaded and run:
-            img = Image.open(uploaded)
-            out = apply_visual_vibes(img, brightness, contrast, saturation, warmth, vignette, glitch)
-            st.image(np.concatenate([np.array(img), np.array(out)], axis=1),
-                     caption="좌: 원본 / 우: 적용", use_column_width=True)
+            img_raw = Image.open(uploaded)
+            # EXIF 회전 보정 + RGB 통일
+            img = ImageOps.exif_transpose(img_raw).convert("RGB")
 
-            # 다운로드 버튼
+            out = apply_visual_vibes(img, brightness, contrast, saturation, warmth, vignette, glitch)
+
+            # 혹시 모를 크기 차이 방지 (현재 함수는 크기 유지하지만 안전장치)
+            if out.size != img.size:
+                out = out.resize(img.size, Image.BILINEAR)
+
+            st.image(
+                np.concatenate([np.array(img), np.array(out)], axis=1),
+                caption="좌: 원본 / 우: 적용",
+                use_column_width=True
+            )
+
             buf = io.BytesIO()
             out.save(buf, format="PNG")
-            st.download_button("결과 PNG 다운로드", data=buf.getvalue(), file_name="uplus_vibe.png", mime="image/png")
+            st.download_button("결과 PNG 다운로드", data=buf.getvalue(), 
+                               file_name="uplus_vibe.png", mime="image/png")
         else:
             st.info("이미지를 업로드하고 [미리보기 생성]을 눌러보세요.")
 
