@@ -7,7 +7,6 @@ os.environ["STREAMLIT_SERVER_FILE_WATCHER_TYPE"] = "poll"
 
 import streamlit as st
 
-st.write("fileWatcherType:", st.get_option("server.fileWatcherType"))
 try:
     from scipy.io.wavfile import write as wav_write
     SCIPY = True
